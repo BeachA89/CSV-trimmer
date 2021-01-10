@@ -2,7 +2,8 @@
 
 
 sidebar <-  dashboardSidebar(
-  fileInput("Foot", "Choose Left Foot aligned File"),
+  fileInput("LFoot", "Choose Left Foot aligned File"),
+  fileInput("RFoot", "Choose Right Foot aligned File"),
   fileInput("Pelvis", "Choose Pelvis aligned File"),
   fileInput("Thorax", "Choose Thorax aligned File"),
   fileInput("Hand", "Choose Hand aligned File"),
@@ -12,10 +13,10 @@ sidebar <-  dashboardSidebar(
                 "Pelvis Rot" = "Pelvis Rot",
                 "Thorax Gyro" = "Thorax Gyro",
                 "Thorax Rot" = "Thorax Rot",
-                "Foot Acc" = "Foot Acc"
-
-                ))
-
+                "Left Foot Acc" = "Left Foot Acc",
+                "Right Foot Acc" = "Right Foot Acc"
+              ))
+  
 )
 
 
@@ -24,17 +25,18 @@ body <-   dashboardBody(
   #   tabItem(
   #     tabName = "SpatioTemporal", h2("SpatioTemporal data"),
   fluidRow(
-                  plotlyOutput("plot")),
+    plotlyOutput("plot")),
   fluidRow(
-                  htmlOutput("xlims"),
-                  br(),
-                  h4("Verbatim plotly `relayout` data"),
-                  verbatimTextOutput("relayout"),
-                  downloadButton("downloadDataF", "Download Foot"),
-                  downloadButton("downloadDataP", "Download Pelvis"),
-                  downloadButton("downloadDataT", "Download Thorax"),
-                  downloadButton("downloadDataH", "Download Hand")),
-           
+    htmlOutput("xlims"),
+    br(),
+    h4("Verbatim plotly `relayout` data"),
+    verbatimTextOutput("relayout"),
+    downloadButton("downloadDataLF", "Download Left Foot"),
+    downloadButton("downloadDataRF", "Download Right Foot"),
+    downloadButton("downloadDataP", "Download Pelvis"),
+    downloadButton("downloadDataT", "Download Thorax"),
+    downloadButton("downloadDataH", "Download Hand")),
+  
   
 )
 

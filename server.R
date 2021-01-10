@@ -3,12 +3,17 @@ options(shiny.maxRequestSize=2000*1024^2)
 server <- function(input, output) {
   # create the plotly time series
   observeEvent(input$goButton, {
-    FootdfAl <- fread(input$Foot$datapath)
-    FootdfAl <-  data.frame(FootdfAl)
+    LFootdfAl <- fread(input$LFoot$datapath)
+    LFootdfAl <-  data.frame(LFootdfAl)
     
+    datanameLF <- input$LFoot[['name']]
+    datanameLF <-  str_remove_all(datanameLF, ".csv")
     
-    datanameF <- input$Foot[['name']]
-    datanameF <-  str_remove_all(datanameF, ".csv")
+    RFootdfAl <- fread(input$RFoot$datapath)
+    RFootdfAl <-  data.frame(RFootdfAl)
+    
+    datanameRF <- input$RFoot[['name']]
+    datanameRF <-  str_remove_all(datanameRF, ".csv")
     
     PelvisdfAl <- fread(input$Pelvis$datapath)
     PelvisdfAl <-  data.frame(PelvisdfAl)
@@ -28,21 +33,27 @@ server <- function(input, output) {
     datanameH <- input$Hand[['name']]
     datanameH <-  str_remove_all(datanameH, ".csv")
     
-    row.names(FootdfAl)<-1:nrow(FootdfAl)
+    row.names(LFootdfAl)<-1:nrow(LFootdfAl)
+    row.names(LFootdfAl)<-1:nrow(LFootdfAl)
     row.names(PelvisdfAl)<-1:nrow(PelvisdfAl)
     row.names(ThoraxdfAl)<-1:nrow(ThoraxdfAl)
     row.names(HanddfAl)<-1:nrow(HanddfAl)
     
-    FootdfAl$V1<-1:nrow(FootdfAl)
+    LFootdfAl$V1<-1:nrow(LFootdfAl)
+    RFootdfAl$V1<-1:nrow(RFootdfAl)
     PelvisdfAl$V1<-1:nrow(PelvisdfAl)
     ThoraxdfAl$V1<-1:nrow(ThoraxdfAl)
     HanddfAl$V1<-1:nrow(HanddfAl)
     
     
     output$plot <- renderPlotly({
-      if (input$Graph_Type == "Foot Acc"){
-        x = FootdfAl$`time_s`
-        y=FootdfAl$`ay_m.s.s`
+      if (input$Graph_Type == "Left Foot Acc"){
+        x = LFootdfAl$`time_s`
+        y=LFootdfAl$`highg_ay_m.s.s`
+        
+      }else if (input$Graph_Type == "Right Foot Acc"){
+        x = RFootdfAl$`time_s`
+        y=RFootdfAl$`highg_ay_m.s.s`
         
       }else if (input$Graph_Type == "Pelvis Gyro"){
         x = PelvisdfAl$`time_s`
@@ -88,7 +99,7 @@ server <- function(input, output) {
     # print the verbatim event_data for plotly_relayout
     output$relayout <- renderPrint({event_data("plotly_relayout", "source")})
     
-    new_Footdata <- reactive({
+    new_LFootdata <- reactive({
       zoom <- event_data("plotly_relayout", "source")
       if(is.null(zoom) || names(zoom[1]) %in% c("xaxis.autorange", "width")) {
         xlim <- "default of plot"
@@ -97,7 +108,20 @@ server <- function(input, output) {
         xmax <- zoom$`xaxis.range[1]`
       }
       
-      FootdfAl%>% dplyr::filter(between(time_s, xmin, xmax))
+      LFootdfAl%>% dplyr::filter(between(time_s, xmin, xmax))
+      
+    })
+    
+    new_RFootdata <- reactive({
+      zoom <- event_data("plotly_relayout", "source")
+      if(is.null(zoom) || names(zoom[1]) %in% c("xaxis.autorange", "width")) {
+        xlim <- "default of plot"
+      } else {
+        xmin <- zoom$`xaxis.range[0]`
+        xmax <- zoom$`xaxis.range[1]`
+      }
+      
+      RFootdfAl%>% dplyr::filter(between(time_s, xmin, xmax))
       
     })
     
@@ -141,12 +165,21 @@ server <- function(input, output) {
     })
     
     
-    output$downloadDataF <- downloadHandler(
+    output$downloadDataLF <- downloadHandler(
       filename = function() {
-        paste(datanameF, ".csv")
+        paste(datanameLF, ".csv")
       },
       content = function(file) {
-        write.csv(new_Footdata(), file)
+        write.csv(new_LFootdata(), file)
+      }
+    )
+    
+    output$downloadDataRF <- downloadHandler(
+      filename = function() {
+        paste(datanameRF, ".csv")
+      },
+      content = function(file) {
+        write.csv(new_RFootdata(), file)
       }
     )
     output$downloadDataP <- downloadHandler(
