@@ -2,10 +2,10 @@
 
 
 sidebar <-  dashboardSidebar(
-  fileInput("Data", "Choose data File"),
-  actionButton("goButton", "Go!")
-)
-
+  fileInput("data", "Choose data File"),
+  actionButton("goButton", "Go!"),
+  )
+  
 
 
 body <-   dashboardBody(

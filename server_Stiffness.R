@@ -7,7 +7,7 @@ server <- function(input, output) {
     DatadfAl <-  data.frame(DatadfAl)
     
     dataname <- input$Data[['name']]
-    dataname <- str_remove_all(dataname, ".csv")
+    dataname <-  str_remove_all(dataname, ".csv")
     
     setnames(DatadfAl, 2, "Force")
     
@@ -16,9 +16,9 @@ server <- function(input, output) {
     DatadfAl$V1<-1:nrow(DatadfAl)
     
     output$plot <- renderPlotly({
-      x = DatadfAl$`Time`
-      y=DatadfAl$`Force`
-      
+        x = DatadfAl$`Time`
+        y=DatadfAl$`Force`
+        
       p <- plot_ly(x = ~x, y = ~y, mode = 'lines', source = "source")
       
     })
@@ -57,7 +57,7 @@ server <- function(input, output) {
     
     output$downloadData <- downloadHandler(
       filename = function() {
-        paste(dataname, ".csv", sep = "")
+        paste(dataname, ".csv")
       },
       content = function(file) {
         write.csv(new_Datadata(), file)
